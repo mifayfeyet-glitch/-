@@ -1,0 +1,1684 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>חידון סוכות אינטראקטיבי ניר עציון - מסלול תחנות ושאלות מקום</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,300;0,400;0,600;0,800;1,400&family=Assistant:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <style>
+        body {
+            font-family: 'Assistant', 'Rubik', sans-serif;
+            background: #142417;
+            color: #f8fafc;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        .sukkah-bg {
+            background-color: #1a2f1d;
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(245, 158, 11, 0.15) 0%, transparent 70%),
+                radial-gradient(circle at 100% 100%, rgba(34, 197, 94, 0.1) 0%, transparent 50%),
+                linear-gradient(180deg, rgba(15, 28, 17, 0.95) 0%, rgba(10, 20, 12, 0.98) 100%);
+        }
+
+        .schach-top {
+            background: repeating-linear-gradient(
+                90deg,
+                #1e3a1e,
+                #1e3a1e 15px,
+                #2d5027 15px,
+                #2d5027 30px,
+                #1b3318 30px,
+                #1b3318 45px
+            );
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.7);
+            border-bottom: 6px solid #854d0e;
+        }
+
+        .paper-chain {
+            display: flex;
+            justify-content: space-around;
+            position: absolute;
+            top: 40px;
+            left: 0;
+            right: 0;
+            z-index: 20;
+            pointer-events: none;
+        }
+
+        .paper-link {
+            width: 22px;
+            height: 38px;
+            border-radius: 12px;
+            border: 4px solid;
+            margin: -5px;
+            display: inline-block;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            animation: swing 3s ease-in-out infinite alternate;
+        }
+
+        .link-red { border-color: #ef4444; background: rgba(239, 68, 68, 0.3); }
+        .link-gold { border-color: #eab308; background: rgba(234, 179, 8, 0.3); }
+        .link-blue { border-color: #3b82f6; background: rgba(59, 130, 246, 0.3); }
+        .link-green { border-color: #22c55e; background: rgba(34, 197, 94, 0.3); }
+        .link-purple { border-color: #a855f7; background: rgba(168, 85, 247, 0.3); }
+
+        @keyframes swing {
+            0% { transform: rotate(-5deg); }
+            100% { transform: rotate(5deg); }
+        }
+
+        .glass-card {
+            background: rgba(26, 47, 29, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(234, 179, 8, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .glass-modal {
+            background: rgba(15, 23, 16, 0.96);
+            backdrop-filter: blur(16px);
+            border: 2px solid #ef4444;
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: #1c1917;
+            font-weight: 800;
+            text-shadow: 0 1px 0 rgba(255,255,255,0.4);
+            box-shadow: 0 4px 15px rgba(217, 119, 6, 0.4);
+            transition: all 0.2s ease;
+        }
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(217, 119, 6, 0.6);
+            background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+        }
+
+        .fairy-light {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 8px;
+            box-shadow: 0 0 10px currentColor;
+            animation: pulse-light 1.5s infinite alternate;
+        }
+        @keyframes pulse-light {
+            0% { opacity: 0.4; transform: scale(0.8); }
+            100% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .score-float-anim {
+            animation: floatUpFade 1.2s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+        }
+        @keyframes floatUpFade {
+            0% { opacity: 0; transform: translateY(10px) scale(0.8); }
+            30% { opacity: 1; transform: translateY(-10px) scale(1.1); }
+            100% { opacity: 0; transform: translateY(-40px) scale(1); }
+        }
+
+        .radar-pulse {
+            position: relative;
+        }
+        .radar-pulse::before {
+            content: '';
+            position: absolute;
+            inset: -10px;
+            border-radius: 50%;
+            border: 2px solid rgba(34, 197, 94, 0.6);
+            animation: radar-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+        }
+        @keyframes radar-ping {
+            75%, 100% {
+                transform: scale(1.4);
+                opacity: 0;
+            }
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #142417; }
+        ::-webkit-scrollbar-thumb { background: #2d5027; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #f59e0b; }
+    </style>
+</head>
+<body class="sukkah-bg flex flex-col min-h-screen">
+
+    <header class="relative z-30">
+        <div class="schach-top h-12 w-full flex items-center justify-between px-4 relative overflow-hidden">
+            <div class="flex items-center space-x-3 space-x-reverse opacity-90 text-emerald-300 text-sm font-bold">
+                <i class="fa-solid fa-satellite text-amber-400"></i>
+                <span>מסלול מחזורי: שאלת דרך ➔ אימות תחנה ➔ שאלת מקום</span>
+            </div>
+            
+            <div class="hidden md:flex items-center">
+                <span class="fairy-light text-amber-300"></span>
+                <span class="fairy-light text-emerald-400" style="animation-delay: 0.3s"></span>
+                <span class="fairy-light text-red-400" style="animation-delay: 0.6s"></span>
+                <span class="fairy-light text-blue-400" style="animation-delay: 0.9s"></span>
+                <span class="fairy-light text-amber-300" style="animation-delay: 1.2s"></span>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button onclick="openAdminLoginModal()" class="flex items-center gap-1.5 bg-purple-500/20 hover:bg-purple-500/30 border border-purple-400/40 text-purple-300 px-3 py-1 rounded-lg text-xs font-bold transition-all">
+                    <i class="fa-solid fa-user-shield text-purple-400"></i>
+                    <span>ניהול</span>
+                </button>
+                <button onclick="openShareQrModal()" class="flex items-center gap-1.5 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-400/40 text-amber-300 px-3 py-1 rounded-lg text-xs font-bold transition-all">
+                    <i class="fa-solid fa-qrcode"></i>
+                    <span>שתף ב-QR</span>
+                </button>
+                <button onclick="openLeaderboardModal()" class="flex items-center gap-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/40 text-emerald-300 px-3 py-1 rounded-lg text-xs font-bold transition-all">
+                    <i class="fa-solid fa-trophy text-amber-400"></i>
+                    <span>טבלת מובילים</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="paper-chain opacity-90 hidden sm:flex">
+            <div class="paper-link link-gold"></div>
+            <div class="paper-link link-green"></div>
+            <div class="paper-link link-red"></div>
+            <div class="paper-link link-blue"></div>
+            <div class="paper-link link-purple"></div>
+            <div class="paper-link link-gold"></div>
+            <div class="paper-link link-green"></div>
+            <div class="paper-link link-red"></div>
+            <div class="paper-link link-blue"></div>
+            <div class="paper-link link-purple"></div>
+        </div>
+
+        <div class="max-w-6xl mx-auto px-4 pt-6 flex justify-between items-center relative z-10">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-400/40 flex items-center justify-center text-amber-400 text-2xl shadow-lg">
+                    <i class="fa-solid fa-route"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl sm:text-2xl font-black text-amber-300 tracking-wide">הרפתקת ניווט וחידון תחנות - ניר עציון</h1>
+                    <p class="text-xs sm:text-sm text-emerald-200/80">סדר מובנה: עונים על שאלת דרך ➔ צועדים ומאמתים GPS ➔ עונים על שאלת המקום!</p>
+                </div>
+            </div>
+
+            <div id="headerStats" class="hidden md:flex items-center gap-4 bg-emerald-950/80 border border-emerald-600/30 px-4 py-2 rounded-xl text-sm">
+                <div class="text-center">
+                    <span class="block text-xs text-gray-400">תחנה</span>
+                    <span id="statStation" class="font-bold text-amber-400">1 / 12</span>
+                </div>
+                <div class="h-6 w-px bg-emerald-800"></div>
+                <div class="text-center relative">
+                    <span class="block text-xs text-gray-400">ניקוד משוקלל</span>
+                    <span id="statScore" class="font-bold text-emerald-400">0</span>
+                    <div id="scoreFloatContainer" class="absolute -top-6 right-0 left-0 pointer-events-none"></div>
+                </div>
+                <div class="h-6 w-px bg-emerald-800"></div>
+                <div class="text-center">
+                    <span class="block text-xs text-gray-400">רצף (Streak)</span>
+                    <span id="statStreak" class="font-bold text-amber-300">🔥 0</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-4xl mx-auto w-full px-4 py-6 my-auto relative z-20 flex-1 flex flex-col justify-center">
+        
+        <!-- WELCOME SCREEN -->
+        <div id="welcomeScreen" class="glass-card rounded-3xl p-6 sm:p-10 text-center relative overflow-hidden">
+            <div class="inline-flex items-center justify-center p-3 bg-amber-400/10 border border-amber-400/30 rounded-2xl mb-4 text-amber-400 gap-3">
+                <i class="fa-solid fa-book-open-reader text-3xl"></i>
+                <i class="fa-solid fa-location-dot text-3xl"></i>
+                <i class="fa-solid fa-monument text-3xl"></i>
+            </div>
+
+            <h2 class="text-3xl sm:text-5xl font-extrabold text-white mb-4 leading-tight">
+                מסלול התחנות והשאלות <span class="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-200">בניר עציון</span>
+            </h2>
+            
+            <p class="text-gray-300 text-base sm:text-lg max-w-2xl mx-auto mb-8 leading-relaxed">
+                המשחק בנוי בסדר מחזורי חווייתי: בכל תחנה תעברו <strong class="text-amber-300">3 שלבים מובנים</strong> להשגת הניקוד המרבי!
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 text-right">
+                <div class="bg-emerald-900/40 border border-emerald-600/30 p-4 rounded-2xl flex items-start gap-3">
+                    <div class="bg-amber-500 text-black rounded-xl p-2 font-bold text-lg min-w-[36px] text-center">1</div>
+                    <div>
+                        <h4 class="font-bold text-amber-300 text-sm mb-1">שאלת דרך (ידע סוכות)</h4>
+                        <p class="text-xs text-gray-300">עונים על שאלת הגות/הלכה מכינה כדי לפתוח את רמז הניווט.</p>
+                    </div>
+                </div>
+
+                <div class="bg-emerald-900/40 border border-emerald-600/30 p-4 rounded-2xl flex items-start gap-3">
+                    <div class="bg-emerald-500 text-black rounded-xl p-2 font-bold text-lg min-w-[36px] text-center">2</div>
+                    <div>
+                        <h4 class="font-bold text-emerald-300 text-sm mb-1">צועדים ומאמתים GPS</h4>
+                        <p class="text-xs text-gray-300">צועדים פיזית לתחנה במלון ומבצעים איכון GPS בטווח של עד 50 מטר.</p>
+                    </div>
+                </div>
+
+                <div class="bg-emerald-900/40 border border-emerald-600/30 p-4 rounded-2xl flex items-start gap-3">
+                    <div class="bg-blue-500 text-white rounded-xl p-2 font-bold text-lg min-w-[36px] text-center">3</div>
+                    <div>
+                        <h4 class="font-bold text-blue-300 text-sm mb-1">שאלת המקום והמורשת</h4>
+                        <p class="text-xs text-gray-300">לאחר ההגעה, עונים על שאלה המוקדשת במיוחד לתחנה בה אתם עומדים!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="max-w-md mx-auto space-y-4">
+                <div>
+                    <label for="playerName" class="block text-right text-xs font-bold text-amber-200/90 mb-1">שם הקבוצה / המשפחה:</label>
+                    <input type="text" id="playerName" placeholder="הכניסו שם (למשל: משפחת כהן המנווטת)" 
+                        class="w-full bg-slate-900/80 border-2 border-emerald-500/50 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-amber-400 text-center font-bold">
+                </div>
+
+                <!-- Firebase Status Banner -->
+                <div id="firebaseStatusBanner" class="bg-emerald-950/70 border border-emerald-500/40 p-2.5 rounded-xl text-xs text-emerald-300 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-cloud text-amber-400 animate-pulse"></i>
+                    <span id="firebaseStatusText">מתחבר לענן Firebase לשמירת התקדמות...</span>
+                </div>
+
+                <div class="bg-amber-500/10 border border-amber-400/30 p-3 rounded-xl text-xs text-amber-200 text-right flex items-center gap-2">
+                    <i class="fa-solid fa-location-arrow text-amber-400 text-lg"></i>
+                    <span>יש לאשר גישת מיקום (GPS) בדפדפן כדי שתוכלו לאמת את הגעתכם לתחנות.</span>
+                </div>
+
+                <button onclick="startGame()" class="w-full btn-gold py-4 rounded-2xl text-xl flex items-center justify-center gap-3 group">
+                    <i class="fa-solid fa-play text-xl"></i>
+                    <span>יוצאים לדרך למשחק התחנות!</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- MAIN GAME DASHBOARD -->
+        <div id="gameScreen" class="hidden space-y-6">
+            
+            <!-- STATUS TOP BAR -->
+            <div class="glass-card rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-3 w-full sm:w-auto">
+                    <span id="stationBadge" class="bg-amber-500 text-slate-950 font-extrabold px-3 py-1 rounded-xl text-sm">
+                        תחנה 1 מתוך 12
+                    </span>
+                    <span id="phaseBadge" class="bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 font-bold text-xs px-3 py-1 rounded-xl">
+                        שלב 1: שאלת דרך
+                    </span>
+                </div>
+
+                <div class="w-full sm:flex-1 max-w-md bg-slate-950/60 rounded-full h-3 p-0.5 border border-emerald-800/40">
+                    <div id="progressBar" class="bg-gradient-to-r from-emerald-500 to-amber-400 h-full rounded-full transition-all duration-500" style="width: 8.3%"></div>
+                </div>
+
+                <div class="flex items-center gap-4 text-xs font-bold text-amber-200">
+                    <div><i class="fa-solid fa-trophy text-amber-400 ml-1"></i> <span id="currentScoreDisplay">0</span> נק'</div>
+                    <div><i class="fa-solid fa-fire text-amber-500 ml-1"></i> רצף: <span id="currentStreakDisplay">0</span></div>
+                    <div><i class="fa-solid fa-clock text-emerald-400 ml-1"></i> <span id="gameTimerDisplay">00:00</span></div>
+                </div>
+            </div>
+
+            <!-- STEP 1: PRE-ROAD QUESTION CARD -->
+            <div id="prepQuestionCard" class="glass-card rounded-3xl p-6 sm:p-8 space-y-6">
+                <div class="flex items-center justify-between border-b border-emerald-800/50 pb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-brain"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs text-amber-300 font-bold uppercase tracking-wider">שלב 1: שאלת ידע לפני היציאה לתחנה</span>
+                            <h3 id="prepQuestionHeader" class="text-xl sm:text-2xl font-extrabold text-white">שאלת פתיחה</h3>
+                        </div>
+                    </div>
+                    <span class="text-xs bg-amber-500/20 border border-amber-400/40 text-amber-300 px-3 py-1 rounded-full font-bold">
+                        +50 נקודות
+                    </span>
+                </div>
+
+                <div class="bg-slate-900/90 border border-amber-500/30 rounded-2xl p-5 text-right">
+                    <p id="prepQuestionText" class="text-lg sm:text-xl font-bold text-amber-100 leading-relaxed">
+                        -- שאלת הדרך תופיע כאן --
+                    </p>
+                </div>
+
+                <div id="prepAnswersGrid" class="grid grid-cols-1 gap-3">
+                    <!-- Dynamic Answer Buttons -->
+                </div>
+
+                <div id="prepFeedbackBox" class="hidden bg-emerald-950/90 border border-emerald-500/50 rounded-2xl p-4 text-right">
+                    <h5 id="prepFeedbackTitle" class="font-bold text-base mb-1"></h5>
+                    <p id="prepFeedbackText" class="text-sm text-gray-200 leading-relaxed"></p>
+                    <button onclick="proceedToGpsPhase()" class="mt-4 btn-gold px-6 py-2 rounded-xl text-sm font-bold flex items-center gap-2 mr-auto">
+                        <span>המשיכו לשלב 2: אימות הניווט לתחנה</span>
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 2: GPS NAVIGATION CARD -->
+            <div id="locationCard" class="glass-card rounded-3xl p-6 sm:p-8 space-y-6 hidden">
+                <div class="flex items-center justify-between border-b border-emerald-800/50 pb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-400/40 text-amber-400 flex items-center justify-center text-xl radar-pulse">
+                            <i class="fa-solid fa-crosshairs"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs text-amber-300 font-bold uppercase tracking-wider">שלב 2: צעדו פיזית ואמתו מיקום</span>
+                            <h3 id="targetStationNameTitle" class="text-xl sm:text-2xl font-extrabold text-white">הגיעו ליעד המבוקש</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Riddle Box -->
+                <div class="bg-emerald-950/80 border border-emerald-600/40 rounded-2xl p-5 text-right relative">
+                    <i class="fa-solid fa-quote-right text-3xl text-amber-500/20 absolute top-3 left-4"></i>
+                    <p class="text-xs text-amber-400 font-bold mb-1">רמז הניווט לתחנה זו במלון:</p>
+                    <p id="locationRiddleText" class="text-lg sm:text-xl font-bold text-emerald-100 leading-relaxed">
+                        -- חידת המיקום תופיע כאן --
+                    </p>
+                </div>
+
+                <!-- Live Distance & Radar Meter -->
+                <div class="bg-slate-900/90 border-2 border-emerald-500/40 p-6 rounded-2xl text-center space-y-4">
+                    <div class="flex flex-col sm:flex-row items-center justify-around gap-4 border-b border-emerald-800/40 pb-4">
+                        <div>
+                            <span class="text-xs text-gray-400 block font-bold">שם התחנה המכוונת</span>
+                            <span id="targetStationTitle" class="text-lg font-black text-amber-300">-- מחשב יעד --</span>
+                        </div>
+                        
+                        <div class="h-10 w-px bg-emerald-800/60 hidden sm:block"></div>
+
+                        <div>
+                            <span class="text-xs text-gray-400 block font-bold">מרחק נוכחי מאיכון ה-GPS</span>
+                            <span id="liveDistanceDisplay" class="text-2xl font-black text-emerald-400">טוען GPS...</span>
+                        </div>
+                    </div>
+
+                    <!-- API Location Address Banner -->
+                    <div id="apiLocationAddress" class="bg-emerald-950/60 border border-emerald-500/30 p-2.5 rounded-xl text-xs text-emerald-200 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-map-pin text-amber-400 animate-bounce"></i>
+                        <span id="apiAddressText">ממתין לזיהוי כתובת...</span>
+                    </div>
+
+                    <p class="text-xs text-emerald-200">
+                        הגעתם אל המתחם? (טווח אימות מדויק: עד 50 מטרים):
+                    </p>
+
+                    <button onclick="checkGPSLocation()" class="w-full btn-gold py-4 rounded-xl text-lg flex items-center justify-center gap-3 shadow-xl">
+                        <i class="fa-solid fa-location-crosshairs text-xl animate-pulse"></i>
+                        <span>לחצו לאימות GPS: הגעתי לתחנה! (+100 נק')</span>
+                    </button>
+
+                    <div id="gpsStatusMsg" class="text-xs font-bold text-amber-200 min-h-[20px]"></div>
+                </div>
+            </div>
+
+            <!-- STEP 3: STATION-SPECIFIC QUESTION CARD -->
+            <div id="stationQuestionCard" class="glass-card rounded-3xl p-6 sm:p-8 space-y-6 hidden border-2 border-amber-500/50">
+                <div class="flex items-center justify-between border-b border-amber-500/30 pb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg">
+                            <i class="fa-solid fa-landmark"></i>
+                        </div>
+                        <div>
+                            <span class="text-xs text-emerald-400 font-bold uppercase tracking-wider">שלב 3: הגעתם לתחנה! שאלת המקום והמורשת</span>
+                            <h3 id="stationQuestionHeader" class="text-xl sm:text-2xl font-extrabold text-white">שאלה על המקום</h3>
+                        </div>
+                    </div>
+                    <span class="text-xs bg-emerald-500/20 border border-emerald-400/40 text-emerald-300 px-3 py-1 rounded-full font-bold">
+                        +100 נקודות
+                    </span>
+                </div>
+
+                <div class="bg-slate-900/90 border border-amber-500/30 rounded-2xl p-5 text-right">
+                    <p id="stationQuestionText" class="text-lg sm:text-xl font-bold text-amber-100 leading-relaxed">
+                        -- שאלת המקום תופיע כאן --
+                    </p>
+                </div>
+
+                <div id="stationAnswersGrid" class="grid grid-cols-1 gap-3">
+                    <!-- Dynamic Answer Buttons -->
+                </div>
+
+                <div id="stationFeedbackBox" class="hidden bg-emerald-950/90 border border-emerald-500/50 rounded-2xl p-4 text-right">
+                    <h5 id="stationFeedbackTitle" class="font-bold text-base mb-1"></h5>
+                    <p id="stationFeedbackText" class="text-sm text-gray-200 leading-relaxed"></p>
+                    <button onclick="advanceToNextStationCycle()" class="mt-4 btn-gold px-6 py-2 rounded-xl text-sm font-bold flex items-center gap-2 mr-auto">
+                        <span>מצוין! מעבר לתחנה הבאה</span>
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- FINAL SCORE SCREEN -->
+        <div id="finishScreen" class="hidden glass-card rounded-3xl p-8 sm:p-12 text-center space-y-8 relative overflow-hidden">
+            <div class="w-24 h-24 mx-auto rounded-full bg-gradient-to-tr from-amber-400 to-emerald-400 p-1 shadow-2xl">
+                <div class="w-full h-full bg-slate-950 rounded-full flex items-center justify-center text-amber-400 text-4xl">
+                    <i class="fa-solid fa-award"></i>
+                </div>
+            </div>
+
+            <div>
+                <span class="text-xs font-bold uppercase tracking-widest text-emerald-400">סיימתם את כל 12 התחנות והשאלות בניר עציון!</span>
+                <h2 class="text-3xl sm:text-5xl font-black text-white mt-2">אלופי סוכות והכרמל!</h2>
+                <p id="finalPlayerName" class="text-xl text-amber-300 font-bold mt-2"></p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-xl mx-auto">
+                <div class="bg-slate-900/80 border border-emerald-500/30 p-4 rounded-2xl">
+                    <span class="block text-xs text-gray-400">ציון סופי</span>
+                    <span id="finalScore" class="text-3xl font-extrabold text-amber-400">0</span>
+                </div>
+                <div class="bg-slate-900/80 border border-emerald-500/30 p-4 rounded-2xl">
+                    <span class="block text-xs text-gray-400">תשובות נכונות</span>
+                    <span id="finalCorrectCount" class="text-3xl font-extrabold text-emerald-400">0 / 24</span>
+                </div>
+                <div class="bg-slate-900/80 border border-emerald-500/30 p-4 rounded-2xl">
+                    <span class="block text-xs text-gray-400">זמן כולל</span>
+                    <span id="finalTime" class="text-3xl font-extrabold text-blue-400">00:00</span>
+                </div>
+            </div>
+
+            <div class="bg-emerald-950/80 border border-amber-400/40 p-6 rounded-2xl max-w-2xl mx-auto text-right space-y-3">
+                <h4 class="font-bold text-amber-300 text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-scroll text-amber-400"></i>
+                    תעודת הצטיינות ומסע:
+                </h4>
+                <p id="finalEvaluationText" class="text-sm text-emerald-100 leading-relaxed"></p>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center max-w-md mx-auto">
+                <button onclick="restartGame()" class="btn-gold py-3 px-8 rounded-xl font-bold flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    <span>התחל מסלול מחדש</span>
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 30-SECOND PENALTY TASK MODAL -->
+    <div id="penaltyModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden">
+        <div class="glass-modal rounded-3xl max-w-lg w-full p-6 sm:p-8 text-center space-y-6 shadow-2xl relative overflow-hidden">
+            <div class="w-16 h-16 bg-red-500/20 text-red-500 border border-red-500/40 rounded-2xl mx-auto flex items-center justify-center text-3xl">
+                <i class="fa-solid fa-person-walking-arrow-loop-left"></i>
+            </div>
+
+            <div>
+                <span class="text-xs font-bold uppercase text-red-400 tracking-wider">אתם עדיין רחוקים מהתחנה!</span>
+                <h3 class="text-2xl font-extrabold text-white mt-1">משימת עונש אתגרית</h3>
+            </div>
+
+            <div class="relative w-32 h-32 mx-auto flex items-center justify-center">
+                <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                    <path class="text-slate-800" stroke-width="3" stroke="currentColor" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path id="penaltyCirclePath" class="text-red-500 stroke-current" stroke-width="3" stroke-dasharray="100, 100" stroke-linecap="round" fill="none" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                </svg>
+                <span id="penaltyTimerText" class="absolute text-4xl font-black text-red-400">30</span>
+            </div>
+
+            <div class="bg-red-950/60 border border-red-500/40 p-4 rounded-2xl text-right">
+                <span class="text-xs text-red-300 font-bold block mb-1">
+                    <i class="fa-solid fa-bolt ml-1"></i> משימה חווייתית (עד שתמשיכו לצעוד):
+                </span>
+                <p id="penaltyTaskDescription" class="text-base sm:text-lg font-bold text-white">
+                    -- משימה אקראית --
+                </p>
+            </div>
+
+            <button id="penaltyDoneBtn" disabled onclick="closePenaltyModal()" class="w-full bg-gray-700 text-gray-400 font-bold py-3 rounded-xl cursor-not-allowed">
+                ממתינים לסיום 30 השניות...
+            </button>
+        </div>
+    </div>
+
+    <!-- SHARE QR MODAL -->
+    <div id="shareQrModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden">
+        <div class="glass-card rounded-3xl max-w-md w-full p-6 text-center space-y-6 shadow-2xl relative border-2 border-amber-400/50">
+            <button onclick="closeShareQrModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <h3 class="text-2xl font-black text-white">סריקת QR לשיתוף</h3>
+            <p class="text-xs text-emerald-200">סרקו בנייד נוסף להצטרפות למסלול התחנות</p>
+            <div class="bg-white p-4 rounded-2xl inline-block shadow-inner mx-auto border-4 border-amber-500">
+                <div id="mainQrCode" class="flex justify-center"></div>
+            </div>
+            <button onclick="closeShareQrModal()" class="w-full bg-gray-800 text-white py-2.5 rounded-xl font-bold text-sm">סגור</button>
+        </div>
+    </div>
+
+    <!-- LEADERBOARD MODAL -->
+    <div id="leaderboardModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden">
+        <div class="glass-card rounded-3xl max-w-lg w-full p-6 text-center space-y-5 shadow-2xl relative border-2 border-amber-400/50">
+            <button onclick="closeLeaderboardModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="flex items-center justify-center gap-2 text-amber-400 text-2xl font-black">
+                <i class="fa-solid fa-crown"></i>
+                <h3>טבלת המובילים - ניר עציון</h3>
+            </div>
+            <p class="text-xs text-emerald-200">התוצאות והסקוררים הגבוהים ביותר שנשמרו בענן</p>
+            
+            <div id="leaderboardList" class="max-h-72 overflow-y-auto space-y-2 text-right pr-1">
+                <div class="text-center text-sm text-gray-400 py-6">טוען נתונים מהענן...</div>
+            </div>
+
+            <button onclick="closeLeaderboardModal()" class="w-full btn-gold py-2.5 rounded-xl font-bold text-sm">סגור</button>
+        </div>
+    </div>
+
+    <!-- ADMIN LOGIN MODAL -->
+    <div id="adminLoginModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden">
+        <div class="glass-card rounded-3xl max-w-md w-full p-6 text-center space-y-5 shadow-2xl relative border-2 border-purple-500/50">
+            <button onclick="closeAdminLoginModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="w-14 h-14 bg-purple-500/20 border border-purple-400/40 rounded-2xl mx-auto flex items-center justify-center text-purple-400 text-2xl">
+                <i class="fa-solid fa-lock"></i>
+            </div>
+            <h3 class="text-2xl font-black text-white">כניסת מנהל מערכת</h3>
+            <p class="text-xs text-purple-200">הכנס סיסמת מנהל לצפייה במשתתפים וניהול המשחק</p>
+            
+            <input type="password" id="adminPasswordInput" placeholder="הכנס סיסמה..." 
+                class="w-full bg-slate-900 border border-purple-500/50 rounded-xl p-3 text-center text-white text-lg font-bold focus:outline-none focus:border-purple-400">
+            
+            <div id="adminLoginError" class="text-xs text-red-400 font-bold hidden">סיסמה שגויה! נסה שנית.</div>
+
+            <button onclick="submitAdminLogin()" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-3 rounded-xl shadow-lg transition-all">
+                התחבר כמנהל
+            </button>
+        </div>
+    </div>
+
+    <!-- ADMIN DASHBOARD MODAL -->
+    <div id="adminDashboardModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden">
+        <div class="glass-card rounded-3xl max-w-3xl w-full p-6 space-y-5 shadow-2xl relative border-2 border-purple-500/50 max-h-[90vh] flex flex-col">
+            <div class="flex items-center justify-between border-b border-purple-500/30 pb-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-purple-500/20 text-purple-400 rounded-xl flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-user-gear"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xl font-black text-white">פאנל שליטה ומעקב מנהל</h3>
+                        <p class="text-xs text-purple-300">צפייה במיקומי המשתתפים, הוספת נקודות ושליחת הודעות</p>
+                    </div>
+                </div>
+                <button onclick="closeAdminDashboardModal()" class="text-gray-400 hover:text-white text-xl">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Broadcast Message Input Box -->
+            <div class="bg-purple-950/40 border border-purple-500/40 p-4 rounded-2xl space-y-3">
+                <h4 class="text-xs font-bold text-purple-300 uppercase flex items-center gap-2">
+                    <i class="fa-solid fa-bullhorn text-amber-400"></i>
+                    שליחת הודעה מתפרצת לכל המשתתפים
+                </h4>
+                <div class="flex gap-2">
+                    <input type="text" id="adminBroadcastText" placeholder="רשום הודעה (למשל: כולכם מוזמנים לסוכה המרכזית לכיבוד!)..." 
+                        class="flex-1 bg-slate-900 border border-purple-500/40 rounded-xl px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none">
+                    <button onclick="adminSendBroadcastMessage()" class="bg-amber-500 hover:bg-amber-400 text-black font-extrabold px-4 py-2 rounded-xl text-xs flex items-center gap-1">
+                        <i class="fa-solid fa-paper-plane"></i>
+                        <span>שלח לכולם</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Active Players Live List -->
+            <div class="flex-1 overflow-y-auto space-y-3 pr-1">
+                <h4 class="text-xs font-bold text-gray-300 uppercase flex items-center justify-between">
+                    <span>משתתפים פעילים בזמן אמת</span>
+                    <span id="activePlayersCount" class="text-purple-400 font-bold">0 משתתפים</span>
+                </h4>
+
+                <div id="adminPlayersList" class="space-y-2">
+                    <div class="text-center text-sm text-gray-400 py-8">טוען נתוני משתתפים בלייב...</div>
+                </div>
+            </div>
+
+            <button onclick="closeAdminDashboardModal()" class="w-full bg-slate-800 text-gray-300 py-2.5 rounded-xl font-bold text-sm">
+                סגור פאנל ניהול
+            </button>
+        </div>
+    </div>
+
+    <!-- ANNOUNCEMENT NOTIFICATION POPUP FOR PARTICIPANTS -->
+    <div id="adminAnnouncementModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden">
+        <div class="glass-card rounded-3xl max-w-md w-full p-6 text-center space-y-4 shadow-2xl relative border-2 border-amber-400 animate-bounce">
+            <div class="w-16 h-16 bg-amber-500/20 text-amber-400 border border-amber-400/40 rounded-full mx-auto flex items-center justify-center text-3xl">
+                <i class="fa-solid fa-bullhorn"></i>
+            </div>
+            <span class="text-xs font-bold text-amber-400 uppercase tracking-wider block">הודעה חשובה ממנהל המשחק!</span>
+            <p id="adminAnnouncementContent" class="text-lg font-bold text-white leading-relaxed">
+                -- תוכן ההודעה --
+            </p>
+            <button onclick="closeAdminAnnouncementModal()" class="w-full btn-gold py-2.5 rounded-xl font-bold text-sm">
+                אישור והבנתי
+            </button>
+        </div>
+    </div>
+
+    <!-- Firebase SDK Modular Import Script -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, collection, onSnapshot, addDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'nir-etzion-sukkot-app';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' 
+            ? JSON.parse(__firebase_config) 
+            : { apiKey: "demo-key", authDomain: "demo.firebaseapp.com", projectId: "demo-project" };
+
+        window.firebaseApp = initializeApp(firebaseConfig);
+        window.firebaseAuth = getAuth(window.firebaseApp);
+        window.firebaseDb = getFirestore(window.firebaseApp);
+        window.appId = appId;
+
+        // Listen for realtime announcements from admin
+        window.listenToAdminAnnouncements = function() {
+            if (!window.firebaseDb) return;
+            const announcementsRef = collection(window.firebaseDb, 'artifacts', window.appId, 'public', 'data', 'announcements');
+            let initialLoad = true;
+
+            onSnapshot(announcementsRef, (snapshot) => {
+                if (initialLoad) {
+                    initialLoad = false;
+                    return;
+                }
+                snapshot.docChanges().forEach((change) => {
+                    if (change.type === "added") {
+                        const data = change.doc.data();
+                        if (!data.targetUserId || data.targetUserId === 'all' || (window.currentUser && data.targetUserId === window.currentUser.uid)) {
+                            showAdminAnnouncement(data.message);
+                        }
+                    }
+                });
+            }, (err) => console.warn("Announcement listener error:", err));
+        };
+
+        // Save progress & location details for live admin tracking
+        window.saveProgressToCloud = async function() {
+            if (!window.currentUser || !window.firebaseDb) return;
+            try {
+                const userId = window.currentUser.uid;
+                const currentStation = STATIONS_DATA[gameState.currentStationIndex] ? STATIONS_DATA[gameState.currentStationIndex].name : "תחנה 1";
+
+                const dataToSave = {
+                    playerName: gameState.playerName,
+                    currentStationIndex: gameState.currentStationIndex,
+                    stationName: currentStation,
+                    score: gameState.score,
+                    streak: gameState.streak,
+                    totalCorrect: gameState.totalCorrect,
+                    questionsSolvedCount: gameState.questionsSolvedCount,
+                    lat: gameState.lastLat || null,
+                    lng: gameState.lastLng || null,
+                    address: gameState.lastAddress || "טרם אוכן",
+                    updatedAt: new Date().toISOString()
+                };
+
+                const userDocRef = doc(window.firebaseDb, 'artifacts', window.appId, 'users', userId, 'progress', 'sukkot_quiz');
+                await setDoc(userDocRef, dataToSave, { merge: true });
+
+                const publicLeaderboardRef = doc(window.firebaseDb, 'artifacts', window.appId, 'public', 'data', 'leaderboard', userId);
+                await setDoc(publicLeaderboardRef, dataToSave, { merge: true });
+
+            } catch (e) {
+                console.error("Error saving progress to Firebase:", e);
+            }
+        };
+
+        // Listen to personal user document for score modifications by Admin
+        window.listenToPersonalProgress = function(userId) {
+            if (!window.firebaseDb) return;
+            const userDocRef = doc(window.firebaseDb, 'artifacts', window.appId, 'public', 'data', 'leaderboard', userId);
+            onSnapshot(userDocRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (data.score !== undefined && data.score !== gameState.score) {
+                        const diff = data.score - gameState.score;
+                        gameState.score = data.score;
+                        document.getElementById('statScore').innerText = gameState.score;
+                        document.getElementById('currentScoreDisplay').innerText = gameState.score;
+                        if (diff > 0) {
+                            showFloatingScoreAnimation(`+${diff} מנהל! 👑`);
+                            playSound('correct');
+                        }
+                    }
+                }
+            }, (err) => console.warn("Personal listener error:", err));
+        };
+
+        window.initFirebaseUser = async function() {
+            try {
+                let userCredential;
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    userCredential = await signInWithCustomToken(window.firebaseAuth, __initial_auth_token);
+                } else {
+                    userCredential = await signInAnonymously(window.firebaseAuth);
+                }
+                const user = userCredential.user;
+                window.currentUser = user;
+                
+                const statusEl = document.getElementById('firebaseStatusText');
+                if (statusEl) statusEl.innerText = `מחובר בענן כמנווט מזהה: ${user.uid.substring(0, 6)}... (שמירה אוטומטית פעילה)`;
+                
+                await window.loadUserProgressFromCloud(user.uid);
+                window.listenToLeaderboard();
+                window.listenToAdminAnnouncements();
+                window.listenToPersonalProgress(user.uid);
+            } catch (err) {
+                console.warn("Firebase auth:", err.message);
+            }
+        };
+
+        // Admin functionality
+        window.adminAddPointsToPlayer = async function(userId, points) {
+            if (!window.firebaseDb) return;
+            try {
+                const targetRef = doc(window.firebaseDb, 'artifacts', window.appId, 'public', 'data', 'leaderboard', userId);
+                const docSnap = await getDoc(targetRef);
+                if (docSnap.exists()) {
+                    const currentScore = docSnap.data().score || 0;
+                    await updateDoc(targetRef, {
+                        score: currentScore + points,
+                        updatedAt: new Date().toISOString()
+                    });
+                }
+            } catch (e) {
+                console.error("Admin add points error:", e);
+            }
+        };
+
+        window.adminSendBroadcastMessage = async function() {
+            const input = document.getElementById('adminBroadcastText');
+            const msg = input.value.trim();
+            if (!msg || !window.firebaseDb) return;
+
+            try {
+                const announcementsRef = collection(window.firebaseDb, 'artifacts', window.appId, 'public', 'data', 'announcements');
+                await addDoc(announcementsRef, {
+                    message: msg,
+                    targetUserId: 'all',
+                    createdAt: new Date().toISOString()
+                });
+                input.value = "";
+                alert("ההודעה נשלחה בהצלחה לכל המשתתפים!");
+            } catch (e) {
+                console.error("Error sending announcement:", e);
+            }
+        };
+
+        window.adminSendDirectMessage = async function(userId) {
+            const msg = prompt("הכנס הודעה פרטית למשתתף זה:");
+            if (!msg || !window.firebaseDb) return;
+
+            try {
+                const announcementsRef = collection(window.firebaseDb, 'artifacts', window.appId, 'public', 'data', 'announcements');
+                await addDoc(announcementsRef, {
+                    message: msg,
+                    targetUserId: userId,
+                    createdAt: new Date().toISOString()
+                });
+                alert("ההודעה הפרטית נשלחה במושג לייב!");
+            } catch (e) {
+                console.error("Error sending direct msg:", e);
+            }
+        };
+
+        window.initFirebaseUser();
+    </script>
+
+    <script>
+        function openAdminLoginModal() {
+            document.getElementById('adminPasswordInput').value = "";
+            document.getElementById('adminLoginError').classList.add('hidden');
+            document.getElementById('adminLoginModal').classList.remove('hidden');
+        }
+
+        function closeAdminLoginModal() {
+            document.getElementById('adminLoginModal').classList.add('hidden');
+        }
+
+        function submitAdminLogin() {
+            const pwd = document.getElementById('adminPasswordInput').value.trim();
+            if (pwd === "551554") {
+                closeAdminLoginModal();
+                openAdminDashboardModal();
+            } else {
+                document.getElementById('adminLoginError').classList.remove('hidden');
+            }
+        }
+
+        function openAdminDashboardModal() {
+            document.getElementById('adminDashboardModal').classList.remove('hidden');
+            renderAdminPlayersList();
+        }
+
+        function closeAdminDashboardModal() {
+            document.getElementById('adminDashboardModal').classList.add('hidden');
+        }
+
+        function showAdminAnnouncement(message) {
+            playSound('correct');
+            document.getElementById('adminAnnouncementContent').innerText = message;
+            document.getElementById('adminAnnouncementModal').classList.remove('hidden');
+        }
+
+        function closeAdminAnnouncementModal() {
+            document.getElementById('adminAnnouncementModal').classList.add('hidden');
+        }
+
+        function renderAdminPlayersList() {
+            const listContainer = document.getElementById('adminPlayersList');
+            const countEl = document.getElementById('activePlayersCount');
+            const scores = window.cachedLeaderboard || [];
+
+            if (countEl) countEl.innerText = `${scores.length} משתתפים רשומים`;
+
+            if (scores.length === 0) {
+                listContainer.innerHTML = `<div class="text-center text-sm text-gray-400 py-8">אין משתתפים פעילים כעת במערכת הענן.</div>`;
+                return;
+            }
+
+            listContainer.innerHTML = scores.map((player) => `
+                <div class="bg-slate-900/90 border border-purple-500/30 p-3.5 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-right">
+                    <div class="space-y-1">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-white text-base">${player.playerName || 'מנווט אנונימי'}</span>
+                            <span class="bg-purple-500/20 text-purple-300 text-xs px-2 py-0.5 rounded-lg border border-purple-400/30 font-extrabold">
+                                ${player.score || 0} נקודות
+                            </span>
+                        </div>
+                        <div class="text-xs text-emerald-300 flex items-center gap-3">
+                            <span><i class="fa-solid fa-location-dot text-amber-400 ml-1"></i> ${player.stationName || ('תחנה ' + ((player.stationIndex || 0) + 1))}</span>
+                            <span><i class="fa-solid fa-map-pin text-blue-400 ml-1"></i> ${player.address ? player.address.substring(0, 30) + '...' : 'ללא איכון'}</span>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                        <button onclick="window.adminAddPointsToPlayer('${player.id || player.userId}', 50)" class="bg-emerald-600/30 hover:bg-emerald-600 border border-emerald-500 text-emerald-300 px-2.5 py-1 rounded-xl text-xs font-bold transition-all">
+                            +50 נק'
+                        </button>
+                        <button onclick="window.adminAddPointsToPlayer('${player.id || player.userId}', 100)" class="bg-amber-600/30 hover:bg-amber-600 border border-amber-500 text-amber-300 px-2.5 py-1 rounded-xl text-xs font-bold transition-all">
+                            +100 נק'
+                        </button>
+                        <button onclick="window.adminSendDirectMessage('${player.id || player.userId}')" class="bg-blue-600/30 hover:bg-blue-600 border border-blue-500 text-blue-300 px-2.5 py-1 rounded-xl text-xs font-bold transition-all">
+                            <i class="fa-solid fa-comment-dots"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Track last known coordinates in state for admin visibility
+        async function fetchLocationFromAPI(lat, lng) {
+            const addressEl = document.getElementById('apiAddressText');
+            if (lat) gameState.lastLat = lat;
+            if (lng) gameState.lastLng = lng;
+
+            try {
+                let url = lat && lng 
+                    ? `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=he`
+                    : 'http://ip-api.com/json/?lang=he';
+
+                const res = await fetch(url);
+                if (res.ok) {
+                    const data = await res.json();
+                    let formattedAddress = lat && lng 
+                        ? (data.display_name || "אזור ניר עציון והכרמל") 
+                        : `${data.city || 'מיקום רשת'}, ${data.regionName || ''}`;
+
+                    gameState.lastAddress = formattedAddress;
+                    if (addressEl) addressEl.innerText = `איכון API בלייב: ${formattedAddress}`;
+                    if (window.saveProgressToCloud) window.saveProgressToCloud();
+                }
+            } catch (e) {
+                if (addressEl) addressEl.innerText = "איכון מבוסס GPS מקומי במכשיר";
+            }
+        }
+    </script>
+
+    <script>
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            const now = audioCtx.currentTime;
+
+            if (type === 'correct') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523.25, now);
+                osc.frequency.setValueAtTime(659.25, now + 0.1);
+                osc.frequency.setValueAtTime(783.99, now + 0.2);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+                osc.start(now); osc.stop(now + 0.4);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.setValueAtTime(164.81, now + 0.15);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+                osc.start(now); osc.stop(now + 0.4);
+            } else if (type === 'tick') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(800, now);
+                gain.gain.setValueAtTime(0.05, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+                osc.start(now); osc.stop(now + 0.05);
+            }
+        }
+
+        // Structured Stations and Questions Mapping
+        const STATIONS_DATA = [
+            {
+                id: 1,
+                name: "לובי המלון והקבלה",
+                lat: 32.6983,
+                lng: 34.9808,
+                riddle: "מקום המפגש וקבלת הפנים הראשית במלון, שבו מברכים את האורחים ומקבלים מפתחות לחדרים...",
+                prepQuestion: {
+                    question: "מהי מילת המפתח ההלכתית למצוות 'הכנסת אורחים' שמודגשת במיוחד באושפיזין של סוכות?",
+                    options: ["ברכת האורח והארחת עוברי דרכים", "טבילת כלים", "קריאת הפרשה פעמיים", "תקיעת שופר"],
+                    correct: 0,
+                    explanation: "מנהג האושפיזין בסוכות מבוסס על מידת החסד והכנסת אורחים של אבות האומה."
+                },
+                siteQuestion: {
+                    question: "כשנכנסים ללובי ולדלפק הקבלה של מלון ניר עציון, איזה ערך מרכזי של המלון בא לידי ביטוי בקבלת האורחים בחג?",
+                    options: ["אירוח כפרי חם עם אווירת קדושה ושלווה בכרמל", "שקט מוחלט ללא דיבורים", "מסחר בלבד", "אין שום ייחוד"],
+                    correct: 0,
+                    explanation: "מלון ניר עציון ידוע באווירת האירוח הדתי-דתי לאומי החמה והמזמינה שלו בלב הכרמל."
+                }
+            },
+            {
+                id: 2,
+                name: "חדר האוכל המרכזי",
+                lat: 32.6981,
+                lng: 34.9812,
+                riddle: "ניחוחות תבשילים חגיגיים, שולחנות ערוכים בלבן וארוחות החג העשירות של המלון...",
+                prepQuestion: {
+                    question: "מהו שיעור האכילה שאינה 'אכילת עראי' החייבת בישיבה בסוכה מן הדין?",
+                    options: ["כביצה של פת (לחם/מזונות)", "כזית מים", "כל כמות של פרי", "רק סעודת בשר"],
+                    correct: 0,
+                    explanation: "אכילת קבע של פת או מעשה קדירה משיעור כביצה חייבת בסוכה ובברכה."
+                },
+                siteQuestion: {
+                    question: "מהו ההידוד ההלכתי לגבי אכילת ארוחות החג בסוכה הצמודה לחדר האוכל המרכזי של ניר עציון?",
+                    options: ["חובה לאכול את הסעודות הקבועות בסוכה הכשרה", "מותר לאכול בחדר סגור מלכתחילה", "אין צורך בסוכה בארוחות חג", "מותר רק לשתות מים בסוכה"],
+                    correct: 0,
+                    explanation: "בסוכות, סעודות החג המרכזיות הנאכלות במלון נערכות בסוכות המפוארות של המלון."
+                }
+            },
+            {
+                id: 3,
+                name: "בית הכנסת של ניר עציון",
+                lat: 32.6985,
+                lng: 34.9815,
+                riddle: "הלב הרוחני של המקום, שבו מתכנסים לתפילות החג ושירת 'הושענא' סביב התיבה...",
+                prepQuestion: {
+                    question: "מתי אומרים את תפילת 'גשם' (משיב הרוח ומוריד הגשם) בחג הסוכות?",
+                    options: ["בתפילת מוסף של שמיני עצרת", "בליל ראשון של סוכות", "בהושענא רבה בבוקר", "בראש חודש חשוון"],
+                    correct: 0,
+                    explanation: "מזכירים גבורות גשמים החל מתפילת מוסף של שמיני עצרת/שמחת תורה."
+                },
+                siteQuestion: {
+                    question: "מה מייחד את בית הכנסת של ניר עציון בשבתות ובחגים עבור אורחי המלון והתושבים?",
+                    options: ["שילוב של תפילות נוסח אשכנז ומזרח באווירת אחדות מול נוף הכרמל", "אין בו ספרי תורה", "מתפללים בו רק בערב", "הוא משמש כמחליף לחדר אוכל"],
+                    correct: 0,
+                    explanation: "בית הכנסת של הקיבוץ והמלון הוא מוקד רוחני שוקק המאחד את האורחים והתושבים."
+                }
+            },
+            {
+                id: 4,
+                name: "הסוכה המרכזית הגדולה",
+                lat: 32.6982,
+                lng: 34.9810,
+                riddle: "תחת סכך ירוק ורחב ידיים, שרשראות נייר וקישוטים - מקום המיועד למצוות לישב בסוכה...",
+                prepQuestion: {
+                    question: "מהו הדין ההלכתי של 'תעשה ולא מן העשוי' בסיכוך הסוכה?",
+                    options: ["חובה לקצוץ את הענפים מהעץ לפני שהם מונחים כסכך על הסוכה", "אסור לבנות סוכה מעץ", "חובה לקנות סכך חדש בכל שנה", "אין דין כזה"],
+                    correct: 0,
+                    explanation: "אם הסיכוך נעשה בעוד הענף מחובר לקרקע ורק אז נקצץ - הסוכה פסולה משום 'תעשה ולא מן העשוי'."
+                },
+                siteQuestion: {
+                    question: "איזה שיעור גובה מרבי מותר לסוכה הגדולה המוקמת בחצר המלון מן התורה?",
+                    options: ["20 אמה (כ-10 מטרים)", "50 אמה", "5 אמות", "100 אמות"], correct: 0,
+                    explanation: "סוכה הגבוהה מ-20 אמה פסולה מכיוון שאינה נחשבת דירת עראי או שאין העין שולטת בסכך."
+                }
+            },
+            {
+                id: 5,
+                name: "בריכת השחייה המקורה",
+                lat: 32.6978,
+                lng: 34.9805,
+                riddle: "מים צלולים וכחולים במתחם מקורה ומחומם, הצופה אל נוף ההר והיער...",
+                prepQuestion: {
+                    question: "איזה טקס שמח ומיוחד נערך בזמן בית המקדש בחול המועד סוכות וקשור לשאיבת מים?",
+                    options: ["שמחת בית השואבה וניסוך המים", "ברכת אילנות", "קריאת התורה בים", "הקפת החומות"],
+                    correct: 0,
+                    explanation: "אמרו חז\"ל: 'מי שלא ראה שמחת בית השואבה - לא ראה שמחה מימיו'."
+                },
+                siteQuestion: {
+                    question: "מאיזה מעיין היו שואבים את המים לטקס ניסוך המים בחג הסוכות בבית המקדש?",
+                    options: ["מעיין השילוח", "נחל קישון", "ירדן", "מעיין הגיחון"], correct: 0,
+                    explanation: "כהן מיוחד היה ממלא צפצפת זהב ממי מעיין השילוח בירושלים לטקס ניסוך המים."
+                }
+            },
+            {
+                id: 6,
+                name: "מדשאת הנוף והכרמל",
+                lat: 32.6986,
+                lng: 34.9802,
+                riddle: "מרבד ירוק המשקיף אל הנוף המרהיב של הר הכרמל ומישור החוף...",
+                prepQuestion: {
+                    question: "איזה נביא מפורסם מעדי הכרמל קשור לאירוע המזבח והאש שירדה מן השמים בהר הכרמל?",
+                    options: ["אליהו הנביא", "ישעיהו הנביא", "ירמיהו הנביא", "עמוס הנביא"],
+                    correct: 0,
+                    explanation: "אליהו הנביא נלחם בנביאי הבעל בהר הכרמל וקרא 'ה' הוא האלקים'."
+                },
+                siteQuestion: {
+                    question: "כשעומדים במדשאת הנוף של ניר עציון ומביטים מערבה, איזה יום ונוף נפרשים מול העיניים?",
+                    options: ["הים התיכון ומורדות היער הירוק של הכרמל", "מדבר יהודה והים המלח", "הרי הגלעד", "אגם הכנרת"],
+                    correct: 0,
+                    explanation: "ניר עציון ממוקם בנקודה נדירה בכרמל הצופה ישירות אל חוף הכרמל והים התיכון."
+                }
+            },
+            {
+                id: 7,
+                name: "גן המשחקים לילדים",
+                lat: 32.6975,
+                lng: 34.9818,
+                riddle: "מגלשות, נדנדות, ומתקני שעשועים תחת כיפת השמיים בשבילי המלון...",
+                prepQuestion: {
+                    question: "מאיזה גיל חייב קטן (ילד) במצוות סוכה מדברי סופרים (מדרבנן)?",
+                    options: ["מגיל שהילד אינו צריך לאמו ('כבן חמש או שש')", "מגיל בר מצווה בלבד", "מגיל יום אחד", "מגיל 18"],
+                    correct: 0,
+                    explanation: "קטן שאינו צריך לאמו חייב בסוכה מדרבנן כחלק ממצוות חינוך."
+                },
+                siteQuestion: {
+                    question: "לפי המדרש, איזה מבין ארבעת המינים משול לילדים או אנשים שיש בהם 'טעם ואין בהם ריח' (לומדי תורה)?",
+                    options: ["לולב (תמר)", "אתרוג", "הדס", "ערבה"], correct: 0,
+                    explanation: "ללולב יש טעם (פרי התמר) אך אין לו ריח - כנגד מי שיש בו תורה ואין בו מעשים טובים."
+                }
+            },
+            {
+                id: 8,
+                name: "בוסתן הזיתים והשביל האקולוגי",
+                lat: 32.6990,
+                lng: 34.9820,
+                riddle: "עצים עתיקים בעלי עלים כסופים, שביל הליכה פסטורלי וריח אדמה ירוקה...",
+                prepQuestion: {
+                    question: "איזה מבין ארבעת המינים נקרא בתורה 'ענף עץ עבות'?",
+                    options: ["הדס", "אתרוג", "לולב", "ערבה"],
+                    correct: 0,
+                    explanation: "'ענף עץ עבות' הוא ההדס, המאופיין בעלים המשולשים המכסים את הענף."
+                },
+                siteQuestion: {
+                    question: "הזית המשובח הגדל בבוסתן הכרמל הוא אחד ממה?",
+                    options: ["שבעת המינים שנתברכה בהם ארץ ישראל", "ארבעת המינים של סוכות", "עצי הסכך היחידים", "אין לו קשר לארץ"],
+                    correct: 0,
+                    explanation: "ארץ זית שמן ודבש - הזית הוא מהמיוחסים שבשבעת המינים שנתברכה בהם הארץ."
+                }
+            },
+            {
+                id: 9,
+                name: "אולם האירועים והכנסים",
+                lat: 32.6984,
+                lng: 34.9811,
+                riddle: "המקום שבו נערכים הרצאות, מופעי חג, שיעורים וכנסים חגיגיים...",
+                prepQuestion: {
+                    question: "איזו מצווה מיוחדת מן התורה נערכה בבית המקדש במוצאי שנת השמיטה בחג הסוכות בכינוס כל העם?",
+                    options: ["מצוות 'הקהל'", "ברכת כהנים כפולה", "חביטת ערבות בלבד", "קרבן פסח"],
+                    correct: 0,
+                    explanation: "מצוות הקהל: 'הקהל את העם האנשים והנשים והטף... למען ישמעו ולמען ילמדו'."
+                },
+                siteQuestion: {
+                    question: "באולם האירועים והכנסים בניר עציון מתכנסים למגוון שמחות. איזה יום בחג הסוכות נקרא 'יום הקהל והשמחה'?",
+                    options: ["שמחת תורה / שמיני עצרת", "צום גדליה", "ערב יום כיפור", "ל' בשבט"],
+                    correct: 0,
+                    explanation: "שמיני עצרת ושמחת תורה הם ימי שיא השמחה והתכנסות הכלל לסיום קריאת התורה."
+                }
+            },
+            {
+                id: 10,
+                name: "פינת המורשת ואנדרטת הזיכרון",
+                lat: 32.6988,
+                lng: 34.9806,
+                riddle: "אתר היסטורי המנציח את גבורת מייסדי כפר עציון והקמתו מחדש בכרמל...",
+                prepQuestion: {
+                    question: "באיזו שנה הוקם קיבוץ ניר עציון על ידי ניצולי ולוחמי גוש עציון שנפלו בשבי?",
+                    options: ["שנת תש\"י (1950)", "שנת תרפ\"ד (1924)", "שנת תשכ\"ז (1967)", "שנת תשנ\"א (1991)"],
+                    correct: 0,
+                    explanation: "ניר עציון הוקם בל\"ג בעומר תש\"י (1950) על ידי שרידי גוש עציון שעלבו ונבנו מחדש בכרמל."
+                },
+                siteQuestion: {
+                    question: "מהו המסר ההיסטורי והרוחני המרכזי המונצח בפינת המורשת של ניר עציון?",
+                    options: ["תקומה מתוך חורבן, אמונה, התיישבות ובנייה מחדש של הקהילה בכרמל", "רק סיפורי חקלאות", "מפעל תעשייתי", "אין מסר מיוחד"],
+                    correct: 0,
+                    explanation: "מייסדי ניר עציון קמו מאפר גוש עציון בתש\"ח והקימו בית וקהילה מופלאה ומשגשגת בכרמל."
+                }
+            },
+            {
+                id: 11,
+                name: "מתחם חדרי האירוח הכפריים",
+                lat: 32.6972,
+                lng: 34.9812,
+                riddle: "שבילים ירוקים המובילים לבקתות הלינה השקטות והצמודות לקרקע...",
+                prepQuestion: {
+                    question: "מה פירוש הכלל ההלכתי 'תשבו כעין תדורו' לגבי הישיבה והשינה בסוכה?",
+                    options: ["שיש להתנהג בסוכה כפי שאדם דר בביתו המרכזי במשך ימות השנה", "שאסור לישון בסוכה", "שמותר רק לעמוד בסוכה", "שחובה לבנות סוכה מאבנים"],
+                    correct: 0,
+                    explanation: "תשבו כעין תדורו: כל שבעת הימים עושה אדם את סוכתו דירה קבועה וביתו עראי."
+                },
+                siteQuestion: {
+                    question: "מה הדין של מי שמצטער בגופו (כגון קור כבד או גשם) מלישון בסוכה ליד חדרו?",
+                    options: ["'מצטער פטור מן הסוכה' ורשאי לישון בחדרו", "חייב לישון בסוכה בכל מחיר", "חייב לצום", "פסול מכל המצוות"],
+                    correct: 0,
+                    explanation: "הלכה פסוקה: מצטער פטור מן הסוכה, משום שאין אדם דר במקום שגורם לו צער."
+                }
+            },
+            {
+                id: 12,
+                name: "סוכת היצירה והילדים",
+                lat: 32.6980,
+                lng: 34.9809,
+                riddle: "שולחנות עמוסי ניירות צבעוניים, מספריים, נצנצים וציורי ארבעת המינים...",
+                prepQuestion: {
+                    question: "מהו הדין של 'נוי סוכה' (קישוטים המיועדים לסוכה)?",
+                    options: ["קישוטי הסוכה מוקצים למצוותם ואסור להשתמש בהם לצרכי חול בכל ימי החג", "אין שום קדושה בקישוטים", "חובה לזרוק אותם ביום השני", "סוכה עם קישוטים פסולה"],
+                    correct: 0,
+                    explanation: "נוי סוכה נתפס לקדושת המצווה ואין להשתמש בו לצרכי חול במהלך כל החג."
+                },
+                siteQuestion: {
+                    question: "איזה מנהג ייחודי של חביטת ענפים נערך ביום האחרון של סוכות (הושענא רבה)?",
+                    options: ["חביטת 5 בדי ערבה בקרקע", "חביטת אתרוגים", "תליית לולבים", "שריפת הסכך"],
+                    correct: 0,
+                    explanation: "בהושענא רבה חובטים 5 בדי ערבות כחלק ממנהג נביאים עתיק ויומיים לפני שמחת תורה."
+                }
+            }
+        ];
+
+        const PENALTY_TASKS = [
+            "שרו בקול רם פזמון מתוך שיר סוכות מוכר!",
+            "עשו 10 קפיצות נחשון (Jumping Jacks) במקום!",
+            "דקלמו במהירות את שמות 'ארבעת המינים' מהסוף להתחלה!",
+            "בצעו פנטומימה (ללא מילים) של נענוע לולב ל-6 רוחות השמיים!",
+            "הגידו 5 דברים שחייבים להיות בסוכה כשרה תוך 10 שניות!"
+        ];
+
+        let gameState = {
+            playerName: "משפחת כהן המנווטת",
+            currentStationIndex: 0,
+            score: 0,
+            streak: 0, // Smart Score: Streak Tracking
+            totalCorrect: 0,
+            questionsSolvedCount: 0,
+            questionStartTime: null, // Smart Score: Speed Tracking
+            startTime: null,
+            timerInterval: null,
+            watchPositionId: null,
+            currentDistance: null,
+            penaltyTimer: 30,
+            penaltyInterval: null
+        };
+
+        function calculateSmartScore(basePoints, isCorrect) {
+            if (!isCorrect) {
+                gameState.streak = 0;
+                updateStreakDisplay();
+                return { totalEarned: 0, streakBonus: 0, timeBonus: 0 };
+            }
+
+            // 1. Streak Bonus (+15 points per consecutive streak item)
+            gameState.streak += 1;
+            const streakBonus = Math.min((gameState.streak - 1) * 15, 60);
+
+            // 2. Speed Bonus (Up to +25 points if answered under 10 seconds)
+            let timeBonus = 0;
+            if (gameState.questionStartTime) {
+                const elapsedSec = (new Date() - gameState.questionStartTime) / 1000;
+                if (elapsedSec < 10) {
+                    timeBonus = Math.round((10 - elapsedSec) * 2.5);
+                }
+            }
+
+            const totalEarned = basePoints + streakBonus + timeBonus;
+            gameState.score += totalEarned;
+
+            updateStreakDisplay();
+            showFloatingScoreAnimation(`+${totalEarned} 🔥`);
+
+            // Sync with Firebase
+            if (window.saveProgressToCloud) window.saveProgressToCloud();
+
+            return { totalEarned, streakBonus, timeBonus };
+        }
+
+        function updateStreakDisplay() {
+            const streakTxt = `🔥 ${gameState.streak}`;
+            const streakEl = document.getElementById('statStreak');
+            const currentStreakEl = document.getElementById('currentStreakDisplay');
+            if (streakEl) streakEl.innerText = streakTxt;
+            if (currentStreakEl) currentStreakEl.innerText = gameState.streak;
+        }
+
+        function showFloatingScoreAnimation(text) {
+            const container = document.getElementById('scoreFloatContainer');
+            if (!container) return;
+            const el = document.createElement('div');
+            el.className = 'score-float-anim font-black text-amber-300 text-sm absolute text-center w-full';
+            el.innerText = text;
+            container.appendChild(el);
+            setTimeout(() => el.remove(), 1200);
+        }
+
+        function renderLeaderboardUI(scores) {
+            const listEl = document.getElementById('leaderboardList');
+            if (!listEl) return;
+            if (!scores || scores.length === 0) {
+                listEl.innerHTML = `<div class="text-center text-sm text-gray-400 py-6">טרם נרשמו תוצאות בענן. היו הראשונים!</div>`;
+                return;
+            }
+
+            listEl.innerHTML = scores.map((sc, i) => `
+                <div class="flex items-center justify-between bg-slate-900/90 border ${i === 0 ? 'border-amber-400 bg-amber-500/10' : 'border-emerald-600/30'} p-3 rounded-xl text-xs">
+                    <div class="flex items-center gap-3">
+                        <span class="w-6 h-6 rounded-full ${i === 0 ? 'bg-amber-400 text-slate-950 font-black' : 'bg-slate-800 text-amber-300 font-bold'} flex items-center justify-center">
+                            ${i + 1}
+                        </span>
+                        <div>
+                            <span class="font-bold text-white block">${sc.playerName || 'מנווט אנונימי'}</span>
+                            <span class="text-emerald-300 text-[10px]">תשובות נכונות: ${sc.totalCorrect || 0}</span>
+                        </div>
+                    </div>
+                    <div class="text-left font-black text-amber-400 text-sm">
+                        ${sc.score || 0} נק'
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openLeaderboardModal() {
+            document.getElementById('leaderboardModal').classList.remove('hidden');
+            if (window.cachedLeaderboard) {
+                window.renderLeaderboardUI(window.cachedLeaderboard);
+            }
+        }
+
+        function closeLeaderboardModal() {
+            document.getElementById('leaderboardModal').classList.add('hidden');
+        }
+
+        function startGame() {
+            const inputName = document.getElementById('playerName').value.trim();
+            if (inputName) gameState.playerName = inputName;
+
+            document.getElementById('welcomeScreen').classList.add('hidden');
+            document.getElementById('gameScreen').classList.remove('hidden');
+
+            gameState.startTime = new Date();
+            gameState.timerInterval = setInterval(updateGameTimer, 1000);
+
+            startGpsTracking();
+            loadStationCycle(0);
+        }
+
+        function updateGameTimer() {
+            if (!gameState.startTime) return;
+            const diffSec = Math.floor((new Date() - gameState.startTime) / 1000);
+            const mins = String(Math.floor(diffSec / 60)).padStart(2, '0');
+            const secs = String(diffSec % 60).padStart(2, '0');
+            document.getElementById('gameTimerDisplay').innerText = `${mins}:${secs}`;
+        }
+
+        function startGpsTracking() {
+            if (!navigator.geolocation) {
+                document.getElementById('liveDistanceDisplay').innerText = "אין תמיכה ב-GPS במכשיר";
+                fetchLocationFromAPI(null, null);
+                return;
+            }
+
+            gameState.watchPositionId = navigator.geolocation.watchPosition(
+                (pos) => {
+                    const userLat = pos.coords.latitude;
+                    const userLng = pos.coords.longitude;
+                    const targetData = STATIONS_DATA[gameState.currentStationIndex];
+                    if (targetData) {
+                        const dist = calculateDistanceInMeters(userLat, userLng, targetData.lat, targetData.lng);
+                        gameState.currentDistance = Math.round(dist);
+                        document.getElementById('liveDistanceDisplay').innerText = `${gameState.currentDistance} מטרים`;
+                    }
+                    fetchLocationFromAPI(userLat, userLng);
+                },
+                (err) => {
+                    document.getElementById('liveDistanceDisplay').innerText = "ממתין לקליטת GPS...";
+                    fetchLocationFromAPI(null, null);
+                },
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 2000 }
+            );
+        }
+
+        async function fetchLocationFromAPI(lat, lng) {
+            const addressEl = document.getElementById('apiAddressText');
+            try {
+                let url = lat && lng 
+                    ? `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&accept-language=he`
+                    : 'http://ip-api.com/json/?lang=he';
+
+                const res = await fetch(url);
+                if (res.ok) {
+                    const data = await res.json();
+                    let formattedAddress = lat && lng 
+                        ? (data.display_name || "אזור ניר עציון והכרמל") 
+                        : `${data.city || 'מיקום רשת'}, ${data.regionName || ''}`;
+
+                    if (addressEl) addressEl.innerText = `איכון API בלייב: ${formattedAddress}`;
+                }
+            } catch (e) {
+                if (addressEl) addressEl.innerText = "איכון מבוסס GPS מקומי במכשיר";
+            }
+        }
+
+        /* Cycle Management: Step 1 Prep Q -> Step 2 GPS -> Step 3 Site Q */
+        function loadStationCycle(index) {
+            gameState.currentStationIndex = index;
+            const station = STATIONS_DATA[index];
+
+            document.getElementById('stationBadge').innerText = `תחנה ${index + 1} מתוך 12`;
+            document.getElementById('progressBar').style.width = `${((index + 1) / 12) * 100}%`;
+            document.getElementById('statStation').innerText = `${index + 1} / 12`;
+            document.getElementById('statScore').innerText = gameState.score;
+            document.getElementById('currentScoreDisplay').innerText = gameState.score;
+
+            // Start with Step 1: Prep Question
+            showPrepQuestionStage(station);
+        }
+
+        /* Step 1: Prep Question */
+        function showPrepQuestionStage(station) {
+            gameState.questionStartTime = new Date(); // Start timer for smart speed score
+            document.getElementById('phaseBadge').innerText = "שלב 1: שאלת ידע לדרך";
+            document.getElementById('prepQuestionCard').classList.remove('hidden');
+            document.getElementById('locationCard').classList.add('hidden');
+            document.getElementById('stationQuestionCard').classList.add('hidden');
+            document.getElementById('prepFeedbackBox').classList.add('hidden');
+
+            document.getElementById('prepQuestionHeader').innerText = `שאלת דרך לתחנה ${station.id}: ${station.name}`;
+            document.getElementById('prepQuestionText').innerText = station.prepQuestion.question;
+
+            const grid = document.getElementById('prepAnswersGrid');
+            grid.innerHTML = "";
+
+            station.prepQuestion.options.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-right bg-slate-900/90 hover:bg-emerald-950/80 border border-amber-500/30 hover:border-amber-400 p-4 rounded-2xl font-bold text-white transition-all flex items-center justify-between group shadow-md";
+                btn.onclick = () => handlePrepAnswer(i, btn, station);
+                btn.innerHTML = `
+                    <span class="flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center text-sm font-extrabold group-hover:bg-amber-400 group-hover:text-black transition-colors">
+                            ${['א', 'ב', 'ג', 'ד'][i]}
+                        </span>
+                        <span class="text-sm sm:text-base">${opt}</span>
+                    </span>
+                `;
+                grid.appendChild(btn);
+            });
+        }
+
+        function handlePrepAnswer(selectedIndex, btnElement, station) {
+            const allBtns = document.getElementById('prepAnswersGrid').querySelectorAll('button');
+            allBtns.forEach(b => b.disabled = true);
+
+            const feedbackBox = document.getElementById('prepFeedbackBox');
+            const titleEl = document.getElementById('prepFeedbackTitle');
+            const textEl = document.getElementById('prepFeedbackText');
+
+            gameState.questionsSolvedCount++;
+            document.getElementById('statQuestions').innerText = `${gameState.questionsSolvedCount} / 24`;
+
+            const isCorrect = selectedIndex === station.prepQuestion.correct;
+            const scoreDetails = calculateSmartScore(50, isCorrect);
+
+            if (isCorrect) {
+                playSound('correct');
+                gameState.totalCorrect++;
+                btnElement.classList.add('bg-emerald-600/40', 'border-emerald-400');
+                titleEl.innerText = `תשובה נכונה! (+${scoreDetails.totalEarned} נקודות חכמות: בסיס 50 + בונוס רצף/מהירות) 🌟`;
+                titleEl.className = "font-bold text-base mb-1 text-emerald-400";
+            } else {
+                playSound('wrong');
+                btnElement.classList.add('bg-red-600/40', 'border-red-400');
+                allBtns[station.prepQuestion.correct].classList.add('bg-emerald-600/40', 'border-emerald-400');
+                titleEl.innerText = "תשובה לא מדויקת... (הרצף התאפס)";
+                titleEl.className = "font-bold text-base mb-1 text-red-400";
+            }
+
+            document.getElementById('statScore').innerText = gameState.score;
+            document.getElementById('currentScoreDisplay').innerText = gameState.score;
+            textEl.innerText = station.prepQuestion.explanation;
+            feedbackBox.classList.remove('hidden');
+        }
+
+        /* Transition from Step 1 to Step 2 (GPS Navigation) */
+        function proceedToGpsPhase() {
+            const station = STATIONS_DATA[gameState.currentStationIndex];
+            document.getElementById('phaseBadge').innerText = "שלב 2: ניווט GPS בשטח";
+            document.getElementById('prepQuestionCard').classList.add('hidden');
+            document.getElementById('locationCard').classList.remove('hidden');
+
+            document.getElementById('targetStationNameTitle').innerText = `צעדו אל: ${station.name}`;
+            document.getElementById('targetStationTitle').innerText = station.name;
+            document.getElementById('locationRiddleText').innerText = station.riddle;
+            document.getElementById('gpsStatusMsg').innerText = "";
+
+            if (gameState.currentDistance !== null) {
+                document.getElementById('liveDistanceDisplay').innerText = `${gameState.currentDistance} מטרים`;
+            } else {
+                document.getElementById('liveDistanceDisplay').innerText = "מאתר GPS...";
+            }
+        }
+
+        /* Step 2: Strict GPS Check */
+        function checkGPSLocation() {
+            const gpsMsg = document.getElementById('gpsStatusMsg');
+            gpsMsg.innerHTML = `<span class="animate-pulse">⏳ מאמת מיקום GPS מול לוויינים...</span>`;
+
+            if (!navigator.geolocation) {
+                gpsMsg.innerHTML = `<span class="text-red-400">⚠️ המכשיר אינו תומך ב-GPS.</span>`;
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const userLat = position.coords.latitude;
+                    const userLng = position.coords.longitude;
+                    const station = STATIONS_DATA[gameState.currentStationIndex];
+
+                    const distMeters = calculateDistanceInMeters(userLat, userLng, station.lat, station.lng);
+                    gameState.currentDistance = Math.round(distMeters);
+                    document.getElementById('liveDistanceDisplay').innerText = `${gameState.currentDistance} מטרים`;
+
+                    if (distMeters <= 50) {
+                        playSound('correct');
+                        gpsMsg.innerHTML = `<span class="text-emerald-400 font-extrabold text-base">✅ אימות הצליח! הגעתם אל ${station.name}! (+100 נק')</span>`;
+                        gameState.score += 100;
+                        document.getElementById('currentScoreDisplay').innerText = gameState.score;
+                        document.getElementById('statScore').innerText = gameState.score;
+
+                        setTimeout(() => {
+                            showSiteQuestionStage(station);
+                        }, 1200);
+                    } else {
+                        playSound('wrong');
+                        gpsMsg.innerHTML = `<span class="text-red-400 font-bold">❌ אתם עדיין במרחק ${Math.round(distMeters)} מטרים מהתחנה. התקרבו עוד!</span>`;
+                        setTimeout(() => {
+                            triggerPenaltyModal();
+                        }, 800);
+                    }
+                },
+                (error) => {
+                    gpsMsg.innerHTML = `<span class="text-amber-300 font-bold">⚠️ לא ניתן לקבל קליטת GPS. ודאו שהמיקום מופעל במכשיר.</span>`;
+                },
+                { enableHighAccuracy: true, timeout: 8000 }
+            );
+        }
+
+        function calculateDistanceInMeters(lat1, lon1, lat2, lon2) {
+            const R = 6371e3;
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLon/2) * Math.sin(dLon/2);
+            return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+        }
+
+        /* Step 3: Site & Heritage Question */
+        function showSiteQuestionStage(station) {
+            gameState.questionStartTime = new Date(); // Start speed timer
+            document.getElementById('phaseBadge').innerText = "שלב 3: שאלת מקום ומורשת";
+            document.getElementById('locationCard').classList.add('hidden');
+            document.getElementById('stationQuestionCard').classList.remove('hidden');
+            document.getElementById('stationFeedbackBox').classList.add('hidden');
+
+            document.getElementById('stationQuestionHeader').innerText = `שאלה על ${station.name}`;
+            document.getElementById('stationQuestionText').innerText = station.siteQuestion.question;
+
+            const grid = document.getElementById('stationAnswersGrid');
+            grid.innerHTML = "";
+
+            station.siteQuestion.options.forEach((opt, i) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-right bg-slate-900/90 hover:bg-emerald-950/80 border border-amber-500/30 hover:border-amber-400 p-4 rounded-2xl font-bold text-white transition-all flex items-center justify-between group shadow-md";
+                btn.onclick = () => handleSiteAnswer(i, btn, station);
+                btn.innerHTML = `
+                    <span class="flex items-center gap-3">
+                        <span class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center text-sm font-extrabold group-hover:bg-amber-400 group-hover:text-black transition-colors">
+                            ${['א', 'ב', 'ג', 'ד'][i]}
+                        </span>
+                        <span class="text-sm sm:text-base">${opt}</span>
+                    </span>
+                `;
+                grid.appendChild(btn);
+            });
+        }
+
+        function handleSiteAnswer(selectedIndex, btnElement, station) {
+            const allBtns = document.getElementById('stationAnswersGrid').querySelectorAll('button');
+            allBtns.forEach(b => b.disabled = true);
+
+            const feedbackBox = document.getElementById('stationFeedbackBox');
+            const titleEl = document.getElementById('stationFeedbackTitle');
+            const textEl = document.getElementById('stationFeedbackText');
+
+            gameState.questionsSolvedCount++;
+            document.getElementById('statQuestions').innerText = `${gameState.questionsSolvedCount} / 24`;
+
+            const isCorrect = selectedIndex === station.siteQuestion.correct;
+            const scoreDetails = calculateSmartScore(100, isCorrect);
+
+            if (isCorrect) {
+                playSound('correct');
+                gameState.totalCorrect++;
+                btnElement.classList.add('bg-emerald-600/40', 'border-emerald-400');
+                titleEl.innerText = `כל הכבוד! תשובה מופלאה! (+${scoreDetails.totalEarned} נקודות) 🏛️✨`;
+                titleEl.className = "font-bold text-base mb-1 text-emerald-400";
+            } else {
+                playSound('wrong');
+                btnElement.classList.add('bg-red-600/40', 'border-red-400');
+                allBtns[station.siteQuestion.correct].classList.add('bg-emerald-600/40', 'border-emerald-400');
+                titleEl.innerText = "תשובה לא מדויקת... (הרצף התאפס)";
+                titleEl.className = "font-bold text-base mb-1 text-red-400";
+            }
+
+            document.getElementById('statScore').innerText = gameState.score;
+            document.getElementById('currentScoreDisplay').innerText = gameState.score;
+            textEl.innerText = station.siteQuestion.explanation;
+            feedbackBox.classList.remove('hidden');
+        }
+
+        /* Advance Cycle to Next Station */
+        function advanceToNextStationCycle() {
+            if (gameState.currentStationIndex + 1 < STATIONS_DATA.length) {
+                loadStationCycle(gameState.currentStationIndex + 1);
+            } else {
+                finishGame();
+            }
+        }
+
+        function triggerPenaltyModal() {
+            document.getElementById('penaltyModal').classList.remove('hidden');
+            const randomTask = PENALTY_TASKS[Math.floor(Math.random() * PENALTY_TASKS.length)];
+            document.getElementById('penaltyTaskDescription').innerText = randomTask;
+
+            gameState.penaltyTimer = 30;
+            document.getElementById('penaltyTimerText').innerText = "30";
+            document.getElementById('penaltyDoneBtn').disabled = true;
+            document.getElementById('penaltyDoneBtn').className = "w-full bg-gray-700 text-gray-400 font-bold py-3 rounded-xl cursor-not-allowed";
+
+            if (gameState.penaltyInterval) clearInterval(gameState.penaltyInterval);
+
+            gameState.penaltyInterval = setInterval(() => {
+                gameState.penaltyTimer--;
+                document.getElementById('penaltyTimerText').innerText = gameState.penaltyTimer;
+                playSound('tick');
+
+                const dashval = (gameState.penaltyTimer / 30) * 100;
+                document.getElementById('penaltyCirclePath').setAttribute('stroke-dasharray', `${dashval}, 100`);
+
+                if (gameState.penaltyTimer <= 0) {
+                    clearInterval(gameState.penaltyInterval);
+                    document.getElementById('penaltyDoneBtn').disabled = false;
+                    document.getElementById('penaltyDoneBtn').className = "w-full btn-gold py-3 rounded-xl font-bold cursor-pointer animate-pulse";
+                    document.getElementById('penaltyDoneBtn').innerText = "סיימתם! המשיכו לצעוד אל התחנה";
+                }
+            }, 1000);
+        }
+
+        function closePenaltyModal() {
+            document.getElementById('penaltyModal').classList.add('hidden');
+            if (gameState.penaltyInterval) clearInterval(gameState.penaltyInterval);
+        }
+
+        function finishGame() {
+            if (gameState.timerInterval) clearInterval(gameState.timerInterval);
+            if (gameState.watchPositionId) navigator.geolocation.clearWatch(gameState.watchPositionId);
+            if (typeof confetti === 'function') confetti({ particleCount: 150, spread: 90, origin: { y: 0.6 } });
+
+            document.getElementById('gameScreen').classList.add('hidden');
+            document.getElementById('finishScreen').classList.remove('hidden');
+
+            document.getElementById('finalPlayerName').innerText = gameState.playerName;
+            document.getElementById('finalScore').innerText = gameState.score;
+            document.getElementById('finalCorrectCount').innerText = `${gameState.totalCorrect} / 24`;
+            document.getElementById('finalTime').innerText = document.getElementById('gameTimerDisplay').innerText;
+
+            const evalBox = document.getElementById('finalEvaluationText');
+            evalBox.innerText = `כל הכבוד לקבוצת ${gameState.playerName}! צעדתם בכל 12 התחנות בשטח המלון, עניתם על שאלות הדרך, אימתתם ב-GPS ועניתם בהצלחה על שאלות המורשת של ניר עציון!`;
+        }
+
+        function restartGame() {
+            gameState.currentStationIndex = 0; gameState.score = 0; gameState.questionsSolvedCount = 0; gameState.totalCorrect = 0;
+            document.getElementById('finishScreen').classList.add('hidden');
+            document.getElementById('welcomeScreen').classList.remove('hidden');
+        }
+
+        function openShareQrModal() {
+            document.getElementById('shareQrModal').classList.remove('hidden');
+            const qrContainer = document.getElementById('mainQrCode');
+            qrContainer.innerHTML = "";
+            new QRCode(qrContainer, { text: window.location.href, width: 180, height: 180 });
+        }
+        function closeShareQrModal() { document.getElementById('shareQrModal').classList.add('hidden'); }
+    </script>
+</body>
+</html>
