@@ -626,6 +626,7 @@
                         <span>שלח לכולם</span>
                     </button>
                 </div>
+                <div id="adminBroadcastStatus" class="text-xs font-bold text-emerald-400 hidden"></div>
             </div>
 
             <!-- Active Players Live List -->
@@ -646,13 +647,42 @@
         </div>
     </div>
 
+    <!-- DIRECT MESSAGE TO PLAYER MODAL -->
+    <div id="adminDirectMsgModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden">
+        <div class="glass-card rounded-3xl max-w-md w-full p-6 text-center space-y-5 shadow-2xl relative border-2 border-blue-500/50">
+            <button onclick="closeAdminDirectMsgModal()" class="absolute top-4 left-4 text-gray-400 hover:text-white text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="w-14 h-14 bg-blue-500/20 border border-blue-400/40 rounded-2xl mx-auto flex items-center justify-center text-blue-400 text-2xl">
+                <i class="fa-solid fa-paper-plane"></i>
+            </div>
+            <h3 class="text-2xl font-black text-white">שליחת הודעה אישית</h3>
+            <p class="text-xs text-blue-200">הודעה זו תישלח בלייב אך ורק למשתתף: <span id="directMsgPlayerName" class="font-bold text-amber-300"></span></p>
+            
+            <textarea id="adminDirectMsgText" rows="3" placeholder="כתוֹב הודעה אישית למשתתף זה..." 
+                class="w-full bg-slate-900 border border-blue-500/50 rounded-xl p-3 text-right text-white text-sm focus:outline-none focus:border-blue-400 resize-none"></textarea>
+            
+            <div id="adminDirectMsgStatus" class="text-xs font-bold text-emerald-400 hidden"></div>
+
+            <div class="flex gap-2">
+                <button onclick="submitAdminDirectMessage()" class="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-xl text-sm transition-all flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i>
+                    <span>שלח הודעה אישית</span>
+                </button>
+                <button onclick="closeAdminDirectMsgModal()" class="bg-slate-800 hover:bg-slate-700 text-gray-300 font-bold px-4 py-2.5 rounded-xl text-sm">
+                    ביטול
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- ANNOUNCEMENT NOTIFICATION POPUP FOR PARTICIPANTS -->
     <div id="adminAnnouncementModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden">
         <div class="glass-card rounded-3xl max-w-md w-full p-6 text-center space-y-4 shadow-2xl relative border-2 border-amber-400 animate-bounce">
-            <div class="w-16 h-16 bg-amber-500/20 text-amber-400 border border-amber-400/40 rounded-full mx-auto flex items-center justify-center text-3xl">
+            <div id="announcementIconContainer" class="w-16 h-16 bg-amber-500/20 text-amber-400 border border-amber-400/40 rounded-full mx-auto flex items-center justify-center text-3xl">
                 <i class="fa-solid fa-bullhorn"></i>
             </div>
-            <span class="text-xs font-bold text-amber-400 uppercase tracking-wider block">הודעה חשובה ממנהל המשחק!</span>
+            <span id="announcementTypeBadge" class="text-xs font-bold text-amber-400 uppercase tracking-wider block">הודעה חשובה ממנהל המשחק!</span>
             <p id="adminAnnouncementContent" class="text-lg font-bold text-white leading-relaxed">
                 -- תוכן ההודעה --
             </p>
@@ -692,8 +722,10 @@
                 snapshot.docChanges().forEach((change) => {
                     if (change.type === "added") {
                         const data = change.doc.data();
-                        if (!data.targetUserId || data.targetUserId === 'all' || (window.currentUser && data.targetUserId === window.currentUser.uid)) {
-                            showAdminAnnouncement(data.message);
+                        if (data.targetUserId === 'all') {
+                            showAdminAnnouncement(data.message, false);
+                        } else if (window.currentUser && data.targetUserId === window.currentUser.uid) {
+                            showAdminAnnouncement(data.message, true);
                         }
                     }
                 });
@@ -767,8 +799,6 @@
                 const statusEl = document.getElementById('firebaseStatusText');
                 if (statusEl) statusEl.innerText = `מחובר בענן כמנווט מזהה: ${user.uid.substring(0, 6)}... (שמירה אוטומטית פעילה)`;
                 
-                await window.loadUserProgressFromCloud(user.uid);
-                window.listenToLeaderboard();
                 window.listenToAdminAnnouncements();
                 window.listenToPersonalProgress(user.uid);
             } catch (err) {
@@ -796,6 +826,7 @@
 
         window.adminSendBroadcastMessage = async function() {
             const input = document.getElementById('adminBroadcastText');
+            const statusEl = document.getElementById('adminBroadcastStatus');
             const msg = input.value.trim();
             if (!msg || !window.firebaseDb) return;
 
@@ -807,24 +838,55 @@
                     createdAt: new Date().toISOString()
                 });
                 input.value = "";
-                alert("ההודעה נשלחה בהצלחה לכל המשתתפים!");
+                if (statusEl) {
+                    statusEl.innerText = "✓ ההודעה הכללית נשלחה בהצלחה לכל המשתתפים!";
+                    statusEl.classList.remove('hidden');
+                    setTimeout(() => statusEl.classList.add('hidden'), 3000);
+                }
             } catch (e) {
                 console.error("Error sending announcement:", e);
             }
         };
 
-        window.adminSendDirectMessage = async function(userId) {
-            const msg = prompt("הכנס הודעה פרטית למשתתף זה:");
-            if (!msg || !window.firebaseDb) return;
+        let currentDirectMsgUserId = null;
+
+        window.openAdminDirectMsgModal = function(userId, playerName) {
+            currentDirectMsgUserId = userId;
+            document.getElementById('directMsgPlayerName').innerText = playerName || 'משתתף אנונימי';
+            document.getElementById('adminDirectMsgText').value = "";
+            const statusEl = document.getElementById('adminDirectMsgStatus');
+            if (statusEl) statusEl.classList.add('hidden');
+            document.getElementById('adminDirectMsgModal').classList.remove('hidden');
+        };
+
+        window.closeAdminDirectMsgModal = function() {
+            document.getElementById('adminDirectMsgModal').classList.add('hidden');
+            currentDirectMsgUserId = null;
+        };
+
+        window.submitAdminDirectMessage = async function() {
+            const msgInput = document.getElementById('adminDirectMsgText');
+            const statusEl = document.getElementById('adminDirectMsgStatus');
+            const msg = msgInput.value.trim();
+            
+            if (!msg || !currentDirectMsgUserId || !window.firebaseDb) return;
 
             try {
                 const announcementsRef = collection(window.firebaseDb, 'artifacts', window.appId, 'public', 'data', 'announcements');
                 await addDoc(announcementsRef, {
                     message: msg,
-                    targetUserId: userId,
+                    targetUserId: currentDirectMsgUserId,
                     createdAt: new Date().toISOString()
                 });
-                alert("ההודעה הפרטית נשלחה במושג לייב!");
+                msgInput.value = "";
+                if (statusEl) {
+                    statusEl.innerText = "✓ ההודעה האישית נשלחה בהצלחה בלייב!";
+                    statusEl.classList.remove('hidden');
+                    setTimeout(() => {
+                        statusEl.classList.add('hidden');
+                        closeAdminDirectMsgModal();
+                    }, 1200);
+                }
             } catch (e) {
                 console.error("Error sending direct msg:", e);
             }
@@ -863,9 +925,33 @@
             document.getElementById('adminDashboardModal').classList.add('hidden');
         }
 
-        function showAdminAnnouncement(message) {
+        function showAdminAnnouncement(message, isPersonal = false) {
             playSound('correct');
             document.getElementById('adminAnnouncementContent').innerText = message;
+            
+            const badge = document.getElementById('announcementTypeBadge');
+            const iconContainer = document.getElementById('announcementIconContainer');
+
+            if (isPersonal) {
+                if (badge) {
+                    badge.innerText = "✉️ הודעה אישית מיוחדת עבורכם ממנהל המשחק!";
+                    badge.className = "text-xs font-bold text-blue-400 uppercase tracking-wider block";
+                }
+                if (iconContainer) {
+                    iconContainer.className = "w-16 h-16 bg-blue-500/20 text-blue-400 border border-blue-400/40 rounded-full mx-auto flex items-center justify-center text-3xl";
+                    iconContainer.innerHTML = `<i class="fa-solid fa-envelope-open-text"></i>`;
+                }
+            } else {
+                if (badge) {
+                    badge.innerText = "📢 הודעה כללית ממנהל המשחק!";
+                    badge.className = "text-xs font-bold text-amber-400 uppercase tracking-wider block";
+                }
+                if (iconContainer) {
+                    iconContainer.className = "w-16 h-16 bg-amber-500/20 text-amber-400 border border-amber-400/40 rounded-full mx-auto flex items-center justify-center text-3xl";
+                    iconContainer.innerHTML = `<i class="fa-solid fa-bullhorn"></i>`;
+                }
+            }
+
             document.getElementById('adminAnnouncementModal').classList.remove('hidden');
         }
 
@@ -907,8 +993,9 @@
                         <button onclick="window.adminAddPointsToPlayer('${player.id || player.userId}', 100)" class="bg-amber-600/30 hover:bg-amber-600 border border-amber-500 text-amber-300 px-2.5 py-1 rounded-xl text-xs font-bold transition-all">
                             +100 נק'
                         </button>
-                        <button onclick="window.adminSendDirectMessage('${player.id || player.userId}')" class="bg-blue-600/30 hover:bg-blue-600 border border-blue-500 text-blue-300 px-2.5 py-1 rounded-xl text-xs font-bold transition-all">
-                            <i class="fa-solid fa-comment-dots"></i>
+                        <button onclick="window.openAdminDirectMsgModal('${player.id || player.userId}', '${(player.playerName || 'מנווט אנונימי').replace(/'/g, "\\'")}')" class="bg-blue-600/30 hover:bg-blue-600 border border-blue-500 text-blue-300 px-3 py-1 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5">
+                            <i class="fa-solid fa-paper-plane"></i>
+                            <span>הודעה אישית</span>
                         </button>
                     </div>
                 </div>
